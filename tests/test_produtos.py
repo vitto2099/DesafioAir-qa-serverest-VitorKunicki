@@ -55,9 +55,10 @@ def test_buscar_produto_por_id_existente(token_admin):
 
 
 def test_buscar_produto_por_id_inexistente():
-    resposta = requests.get(f"{BASE_URL}/produtos/id_que_nao_existe_123")
+    resposta = requests.get(f"{BASE_URL}/produtos/0000000000000000")
     assert resposta.status_code == 400
     assert resposta.json()["message"] == "Produto não encontrado"
+
 
 
 def test_atualizar_produto_existente(token_admin):
