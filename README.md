@@ -1,4 +1,4 @@
-# Desafio Técnico (Sprint 2) — AWS AI FDE Driven Quality Engineering
+# Desafio Técnico — AWS AI FDE Driven Quality Engineering
 
 **Programa:** AI/R Fellowship (AIR Academy & Innovation Studio Quality Engineering com apoio da AWS)  
 **Projeto:** Testes automatizados para a API pública  [ServeRest](https://compassuol.serverest.dev/).
