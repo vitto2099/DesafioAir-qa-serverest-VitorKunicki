@@ -1,7 +1,28 @@
-# Plano de Testes: API ServeRest
+# Plano de Testes & Ajustes Realizados: API ServeRest
 
-## 1. Objetivo da Suíte
+## 🛠️ O que Fizemos (Ajustes e Correções Recentes)
+
+Durante a validação da suíte de testes e integração contínua (CI) via GitHub Actions, identificamos e resolvemos alguns problemas críticos para garantir que a pipeline passe com sucesso:
+
+### 1. Correção no Teste de Produto Inexistente (`test_buscar_produto_por_id_inexistente`)
+* **Problema Encontrado**: O teste tentava buscar um produto com o ID inválido `id_que_nao_existe_123`. A API do ServeRest rejeitava o formato do ID (que exige exatamente 16 caracteres alfanuméricos) retornando um erro de validação de formato. Isso causava um `KeyError` na asserção, pois o campo `message` não vinha na resposta JSON.
+* **Solução**: Ajustado o ID de teste para `0000000000000000` (16 caracteres). A API agora processa a busca com sucesso e retorna corretamente o status 400 com a mensagem `"Produto não encontrado"`, fazendo o teste passar.
+
+### 2. Resolução do erro `ModuleNotFoundError: No module named 'tests'` no GitHub Actions
+* **Problema Encontrado**: Os arquivos `test_login.py`, `test_produtos.py` e `test_listar_usuarios_retorna_campos_esperados.py` continham importações com o prefixo `tests.conftest` e `tests.schemas`. Quando o pytest rodava no CI do GitHub Actions a partir do diretório raiz, ele não reconhecia a pasta `tests` como um pacote Python global, quebrando as importações durante a coleta dos testes.
+* **Solução**: Removemos o prefixo `tests.` das importações de todos os arquivos. Agora eles importam localmente (`from conftest import ...` e `from schemas import ...`), o que é o padrão nativo compatível com o pytest em qualquer ambiente.
+
+### 3. Ajuste no script de execução local `rodarTudo.py`
+* **Problema Encontrado**: O arquivo chamava-se `test_rodarTudo.py`. Devido ao prefixo `test_`, o pytest tentava coletá-lo como um arquivo de testes e executava a chamada de nível de módulo do `subprocess.run(pip install...)` no momento de importação. No runner do GitHub Actions, essa instalação redundante falhava ou causava bloqueio, quebrando o pytest na fase de coleta com `exit code 2`.
+* **Solução**: Renomeamos o arquivo para `rodarTudo.py` (para que o pytest não tente coletá-lo como teste) e protegemos a chamada de instalação com o bloco `if __name__ == "__main__":`.
+
+---
+
+## 📋 Plano de Testes Original
+
+### 1. Objetivo da Suíte
 O objetivo desta suíte de testes automatizados é garantir a qualidade, estabilidade e corretude dos principais endpoints da API pública ServeRest (`/usuarios`, `/login` e `/produtos`). A suíte deve validar respostas para dados válidos, inválidos e fluxos de negócio como autenticação e validação de perfil de administrador.
+
 
 ## 2. Estratégia
 - **Tipo de Teste:** Testes de API (Testes de Contrato e Testes Funcionais).
