@@ -50,3 +50,25 @@ SCHEMA_LISTAR_PRODUTOS = {
     },
     "required": ["quantidade", "produtos"]
 }
+
+SCHEMA_CADASTRO_PRODUTO_SUCESSO = {
+    "type": "object",
+    "properties": {
+        "message": {"type": "string"},
+        "_id": {"type": "string"}
+    },
+    "required": ["message", "_id"]
+}
+
+SCHEMA_PRODUTO_DETALHE = {
+    "type": "object",
+    "properties": {
+        "nome": {"type": "string"},
+        "preco": {"type": "integer"},
+        "descricao": {"type": "string"},
+        "quantidade": {"type": "integer"},
+        "_id": {"type": "string"}
+    },
+    "required": ["nome", "preco", "descricao", "quantidade", "_id"]
+}
+

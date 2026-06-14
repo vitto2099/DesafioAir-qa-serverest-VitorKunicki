@@ -118,8 +118,23 @@ python -m pytest -v
 
 ## 📊 Cobertura & Integração Contínua
 
-* **Análise de Cobertura**: A suíte cobre **11 dos 15** endpoints disponíveis na API ServeRest, totalizando **73.3%** de cobertura da API. O endpoint de `/carrinhos` não está no escopo atual.
-* **CI/CD (GitHub Actions)**: Configurado em `.github/workflows/pytest.yml`, executando todos os testes automaticamente em ambiente Ubuntu a cada push/pull request nas branches `main` e `master`.
+### Método de Cálculo da Cobertura da API
+Para calcular a cobertura de testes da API REST, utilizamos a abordagem baseada em **mapeamento de rotas e verbos HTTP cobertos** (conforme descrito no artigo de referência). O cálculo segue o mapeamento de todos os endpoints e verbos da API ServeRest contra o que é executado na nossa suíte de testes.
+
+A API ServeRest possui um total de **16 rotas/verbos (endpoints)** descritos no Swagger oficial:
+- **Usuários** (4): GET `/usuarios`, POST `/usuarios`, PUT `/usuarios/{id}`, DELETE `/usuarios/{id}`
+- **Login** (1): POST `/login`
+- **Produtos** (4): GET `/produtos`, POST `/produtos`, PUT `/produtos/{id}`, DELETE `/produtos/{id}`
+- **Carrinhos** (4): GET `/carrinhos`, POST `/carrinhos`, PUT `/carrinhos/{id}`, DELETE `/carrinhos/{id}` (Fora do escopo)
+- **Administração/Dashboard** (3): GET `/administracao`, etc (fora do escopo principal)
+
+### Cobertura Atingida
+* **Endpoints Cobertos:** 9 principais de 16 totais da API.
+* **Percentual de Cobertura Total:** **56.25%** do total geral da API (ou **100%** do escopo proposto de Login, Usuários e Produtos).
+* **Cenários Fora do Escopo & Raciocínio:**
+  * O endpoint `/carrinhos` e rotas administrativas adicionais não foram incluídos por estarem explicitamente fora do escopo definido nos requisitos desta etapa de testes da API.
+
+* **CI/CD (GitHub Actions):** Configurado em `.github/workflows/pytest.yml`, executando todos os testes automaticamente em ambiente Ubuntu a cada push/pull request nas branches `main` e `master`.
 
 ---
 
@@ -129,3 +144,4 @@ python -m pytest -v
 | :--- | :--- | :--- | :--- | :--- |
 | **DELETE `/produtos/{id}`** | Deletar e retornar `"Registro excluído com sucesso"` (200 OK) | Deleta o produto mas retorna `"Nenhum registro excluído"` (200 OK) | Média | Marcado com `@pytest.mark.xfail` |
 | **GET `/produtos/{id_inexistente}`** | Retornar `404 Not Found` para recurso não existente | Retorna `400 Bad Request` com a mensagem `"Produto não encontrado"` | Baixa | Validado no teste |
+
