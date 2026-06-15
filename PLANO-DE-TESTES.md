@@ -1,15 +1,12 @@
-# 📋 Plano de Testes — ServeRest
-
-Este documento descreve os objetivos, a estratégia, o escopo, os cenários de testes planejados/implementados e os critérios de qualidade para a suíte de testes automatizados da API ServeRest.
-
+# Plano de Testes — ServeRest
 ---
 
-## 🎯 1. Objetivo da Suíte
+## 1. Objetivo da Suíte
 Garantir a corretude, confiabilidade e estabilidade dos principais fluxos de negócio expostos pela API pública ServeRest (Endpoints: `/usuarios`, `/login` e `/produtos`), assegurando que regras de validação, autenticação, controle de acesso e manipulação de dados funcionem conforme esperado.
 
 ---
 
-## 🛠️ 2. Estratégia de Testes
+## 2. Estratégia de Testes
 - **Tipo de Teste:** Testes de API funcionais e de contrato.
 - **Camada:** Back-end/API.
 - **Ferramentas:**
@@ -21,7 +18,7 @@ Garantir a corretude, confiabilidade e estabilidade dos principais fluxos de neg
 
 ---
 
-## 📦 3. Escopo
+##  3. Escopo
 - **Em Escopo:**
   - Rota `/usuarios`: CRUD completo, cenários de erro e validações de campos obrigatórios.
   - Rota `/login`: Autenticação com credenciais corretas, inválidas, inexistentes e validação de campos obrigatórios/em branco.
@@ -32,7 +29,7 @@ Garantir a corretude, confiabilidade e estabilidade dos principais fluxos de neg
 
 ---
 
-## 📝 4. Cenários de Teste por Endpoint
+##  4. Cenários de Teste por Endpoint
 
 ### Rota `/usuarios`
 - [x] **GET `/usuarios`** - Listar usuários cadastrados com sucesso (Status 200).
@@ -75,7 +72,7 @@ Garantir a corretude, confiabilidade e estabilidade dos principais fluxos de neg
 
 ---
 
-## 🏆 5. Critérios de Qualidade (Definition of Done)
+##  5. Critérios de Qualidade (Definition of Done)
 1. **Padrão de Nome:** Arquivos devem seguir `test_<acao>_<resultado_esperado>.py` e funções devem seguir `test_<cenario_verificado>`.
 2. **Asserções Múltiplas:** Verificar tanto o status HTTP quanto o corpo da resposta (ex: mensagens de erro e chaves obrigatórias).
 3. **Validação de Contrato (JSON Schema):** Validar o formato das chaves retornadas nos endpoints de Login, Listagem de Usuários e Listagem de Produtos.

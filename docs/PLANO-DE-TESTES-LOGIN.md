@@ -1,11 +1,5 @@
 # 📋 Plano de Testes — Módulo de Login (`test_login.py`)
 
-**Projeto:** ServeRest API — Automação de Testes  
-**Arquivo de Teste:** `tests/test_login.py`  
-**Endpoint Base:** `POST /login`  
-**Data de Criação:** 2026-06-15  
-**Autor:** Vitor Camargo Kunicki  
-
 ---
 
 ## 🎯 1. Objetivo

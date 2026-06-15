@@ -1,11 +1,3 @@
-# ⚡ Comandos de Teste — ServeRest API
-
-**Projeto:** ServeRest API — Automação de Testes  
-**Framework:** Pytest  
-**Data:** 2026-06-15  
-
----
-
 ## 🚀 Execução Geral
 
 ```bash
