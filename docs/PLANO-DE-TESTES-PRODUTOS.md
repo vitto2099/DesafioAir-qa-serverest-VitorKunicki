@@ -1,11 +1,4 @@
 # 📋 Plano de Testes — Módulo de Produtos (`test_produtos.py`)
-
-**Projeto:** ServeRest API — Automação de Testes  
-**Arquivo de Teste:** `tests/test_produtos.py`  
-**Endpoint Base:** `/produtos`  
-**Data de Criação:** 2026-06-15  
-**Autor:** Vitor Camargo Kunicki  
-
 ---
 
 ## 🎯 1. Objetivo
