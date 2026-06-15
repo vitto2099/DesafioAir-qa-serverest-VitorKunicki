@@ -141,8 +141,7 @@ A API ServeRest possui um total de **16 rotas/verbos (endpoints)** descritos no 
 
 | Bug (ID) | Comportamento Esperado | Comportamento Obtido | Severidade | Status |
 | :--- | :--- | :--- | :--- | :--- |
-| **BUG-01: DELETE `/produtos/{id}`** | Deletar e retornar `"Registro excluído com sucesso"` | Deletou o produto mas retornou `"Nenhum registro excluído"`. Na execução atual, o comportamento foi inconsistente e o teste passou inesperadamente (XPASS). | Média | 🟠 Requer ação (avaliar remoção do xfail) |
-| **BUG-02: Instabilidade em `/usuarios`** | Testes de PUT, POST e DELETE de usuários passarem de primeira | Testes falham na 1ª tentativa e exigem reexecução automática (RERUN), sugerindo instabilidade na API. | Média | 🔴 Aberto |
-| **BUG-03: Senha exposta em `/usuarios`** | Campo `password` **nunca** deve aparecer nas respostas da API | Endpoints `GET /usuarios` e `GET /usuarios/{id}` retornam a senha do usuário em **texto puro** na resposta JSON | 🔴 Alta | 🔴 Aberto |
-| **GET `/produtos/{id_inexistente}`** | Retornar `404 Not Found` para recurso não existente | Retorna `400 Bad Request` com a mensagem `"Produto não encontrado"` | Baixa | Validado no teste |
+| **BUG-01: Instabilidade em `/usuarios`** | Testes de PUT, POST e DELETE de usuários passarem de primeira | Testes falham na 1ª tentativa e exigem reexecução automática (RERUN), sugerindo instabilidade na API. | 🟡 Média | 🔴 Aberto |
+| **BUG-02: Senha exposta em `/usuarios`** | Campo `password` **nunca** deve aparecer nas respostas da API | Endpoints `GET /usuarios` e `GET /usuarios/{id}` retornam a senha do usuário em **texto puro** na resposta JSON | 🔴 Alta | 🔴 Aberto |
+
 

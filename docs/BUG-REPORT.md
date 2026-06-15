@@ -6,112 +6,16 @@
 
 | ID | Título Resumido | Severidade | Status | Endpoint |
 |---|---|---|---|---|
-| BUG-01 | `DELETE /produtos/{id}` — teste marcado como `xfail` passou inesperadamente (XPASS) | 🟡 Média | 🟠 Requer Ação | `DELETE /produtos/{id}` |
-| BUG-02 | Testes de usuários apresentam instabilidade (RERUN automático) | 🟡 Média | 🔴 Aberto | `PUT /usuarios/{id}`, `POST /usuarios`, `DELETE /usuarios/{id}` |
-| BUG-03 | Senha retornada em texto puro nas respostas da API de usuários | 🔴 Alta | 🔴 Aberto | `GET /usuarios`, `GET /usuarios/{id}`, `POST /usuarios`, `DELETE /usuarios/{id}` |
+| BUG-01 | Testes de usuários apresentam instabilidade (RERUN automático) | 🟡 Média | 🔴 Aberto | `PUT /usuarios/{id}`, `POST /usuarios`, `DELETE /usuarios/{id}` |
+| BUG-02 | Senha retornada em texto puro nas respostas da API de usuários | 🔴 Alta | 🔴 Aberto | `GET /usuarios`, `GET /usuarios/{id}`, `POST /usuarios`, `DELETE /usuarios/{id}` |
 
 ---
 
-## BUG-01 — `DELETE /produtos/{id}`: Comportamento inesperado gera XPASS
+## BUG-01 — Instabilidade em Testes de Usuários (RERUN automático)
 
 | Campo | Valor |
 |---|---|
 | **ID** | BUG-01 |
-| **Título** | `test_excluir_produto_existente` marcado como `xfail` passou inesperadamente (XPASS) |
-| **Severidade** | 🟡 Média |
-| **Prioridade** | 🟡 Média |
-| **Status** | 🟠 Requer Ação (Marker desatualizado) |
-| **Ambiente** | `https://compassuol.serverest.dev` |
-| **Endpoint Afetado** | `DELETE /produtos/{id}` |
-| **Arquivo de Teste** | `tests/test_produtos.py` |
-| **Função de Teste** | `test_excluir_produto_existente` |
-| **Tipo de Resultado** | `XPASS` (Expected Failure que passou) |
-
----
-
-### 📋 Contexto
-
-O teste `test_excluir_produto_existente` foi originalmente marcado com `@pytest.mark.xfail` porque a API ServeRest retornava a mensagem `"Nenhum registro excluído"` ao tentar excluir um produto recém-cadastrado — mesmo com um ID válido — em vez de retornar `"Registro excluído com sucesso"`.
-
-Na execução atual dos testes, o teste **passou inesperadamente**, gerando um resultado `XPASS` (unexpected pass).
-
----
-
-### 🔄 Saída Real da Execução dos Testes
-
-```
-tests/test_produtos.py::test_excluir_produto_existente XPASS (Bug na
-ServeRest: retorna 'Nenhum registro excluído' mesmo para produto
-existente)                                                         [ 70%]
-
-======================= 16 passed, 1 xpassed in 21.19s ========================
-```
-
----
-
-### 🔍 Análise das Possibilidades
-
-| Hipótese | Descrição |
-|---|---|
-| **A) Bug corrigido na API** | A ServeRest corrigiu o endpoint `DELETE /produtos/{id}` e agora retorna a mensagem correta. O marker `xfail` deve ser **removido**. |
-| **B) Comportamento intermitente** | O endpoint apresenta comportamento inconsistente — às vezes retorna a mensagem correta, às vezes não. Indica instabilidade no backend. |
-| **C) Dependência de estado** | O produto cadastrado imediatamente antes do DELETE está sendo encontrado em uma execução, mas não em outra (possível problema de sincronização). |
-
----
-
-### ✅ Comportamento Esperado (correto)
-
-```
-HTTP 200 OK
-{ "message": "Registro excluído com sucesso" }
-```
-
-### ❌ Comportamento Anterior (bugado — que gerou o xfail)
-
-```
-HTTP 200 OK
-{ "message": "Nenhum registro excluído" }
-```
-
----
-
-### 💡 Impacto
-
-- **Testes:** O resultado `XPASS` é tratado pelo Pytest como **falha implícita** se `strict=True` estiver configurado no marker. Pode quebrar pipelines de CI.
-- **Confiabilidade:** O marker `@pytest.mark.xfail` está desatualizado e enganoso para a equipe.
-- **Manutenção:** Qualquer desenvolvedor que ler o teste assumirá que o bug ainda existe.
-
----
-
-### 🔧 Ação Recomendada
-
-1. Executar o teste **5 vezes consecutivas** para confirmar se o comportamento é consistente.
-2. Se o DELETE retornar sempre `"Registro excluído com sucesso"` → **remover o `@pytest.mark.xfail`** do teste.
-3. Se o comportamento for inconsistente → documentar como `BUG-01b` (instabilidade) e manter o marker.
-
-**Código atual (a ser ajustado):**
-```python
-# ANTES — remover o decorator quando o bug for confirmado como corrigido
-@pytest.mark.xfail(reason="Bug na ServeRest: retorna 'Nenhum registro excluído' mesmo para produto existente")
-def test_excluir_produto_existente(token_admin):
-    ...
-    assert resposta_exclusao.json()["message"] == "Registro excluído com sucesso"
-```
-
-```python
-# DEPOIS (quando confirmado corrigido)
-def test_excluir_produto_existente(token_admin):
-    ...
-    assert resposta_exclusao.json()["message"] == "Registro excluído com sucesso"
-```
-
----
-
-## BUG-02 — Instabilidade em Testes de Usuários (RERUN automático)
-
-| Campo | Valor |
-|---|---|
-| **ID** | BUG-02 |
 | **Título** | Três testes de usuários falham na primeira tentativa e necessitam de reexecução automática (RERUN) |
 | **Severidade** | 🟡 Média |
 | **Prioridade** | 🔴 Alta |
@@ -192,11 +96,11 @@ tests/test_excluir_usuario_com_sucesso.py::test_excluir_usuario_com_sucesso  PAS
 
 ---
 
-## BUG-03 — Senha Retornada em Texto Puro nas Respostas de Usuários
+## BUG-02 — Senha Retornada em Texto Puro nas Respostas de Usuários
 
 | Campo | Valor |
 |---|---|
-| **ID** | BUG-03 |
+| **ID** | BUG-02 |
 | **Título** | Campo `password` exposto em texto puro nas respostas da API de usuários |
 | **Severidade** | 🔴 Alta |
 | **Prioridade** | 🔴 Alta |
@@ -291,12 +195,12 @@ def test_listagem_usuarios_nao_expoe_senha():
     assert resposta.status_code == 200
     usuarios = resposta.json()["usuarios"]
     for usuario in usuarios:
-        assert "password" not in usuario, "BUG-03: Senha exposta em texto puro na listagem de usuários!"
+        assert "password" not in usuario, "BUG-02: Senha exposta em texto puro na listagem de usuários!"
 
 def test_buscar_usuario_por_id_nao_expoe_senha(usuario_id):
     resposta = requests.get(f"{BASE_URL}/usuarios/{usuario_id}")
     assert resposta.status_code == 200
-    assert "password" not in resposta.json(), "BUG-03: Senha exposta em texto puro na busca por ID!"
+    assert "password" not in resposta.json(), "BUG-02: Senha exposta em texto puro na busca por ID!"
 ```
 
 ---
@@ -305,8 +209,7 @@ def test_buscar_usuario_por_id_nao_expoe_senha(usuario_id):
 
 | ID | Endpoint | Resultado na Execução | Causa Provável | Ação |
 |---|---|---|---|---|
-| BUG-01 | `DELETE /produtos/{id}` | XPASS | Bug corrigido na API / marker desatualizado | Remover `@pytest.mark.xfail` após confirmação |
-| BUG-02 | `PUT`, `POST`, `DELETE /usuarios/{id}` | RERUN (x3) | Instabilidade de rede / race condition | Investigar com `--tb=long`, adicionar timeout |
-| BUG-03 | `GET /usuarios`, `GET /usuarios/{id}` | Campo `password` exposto em plaintext | Falta de sanitização da resposta / ausência de hashing | Remover `password` das respostas; implementar hashing |
+| BUG-01 | `PUT`, `POST`, `DELETE /usuarios/{id}` | RERUN (x3) | Instabilidade de rede / race condition | Investigar com `--tb=long`, adicionar timeout |
+| BUG-02 | `GET /usuarios`, `GET /usuarios/{id}` | Campo `password` exposto em plaintext | Falta de sanitização da resposta / ausência de hashing | Remover `password` das respostas; implementar hashing |
 
 **Resultado Geral da Última Execução:** `16 passed, 1 xpassed` em `21.19s`
