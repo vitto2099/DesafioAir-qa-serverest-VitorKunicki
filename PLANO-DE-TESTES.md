@@ -37,7 +37,7 @@ Garantir a corretude, confiabilidade e estabilidade dos principais fluxos de neg
 ### Rota `/usuarios`
 - [x] **GET `/usuarios`** - Listar usuários cadastrados com sucesso (Status 200).
 - [x] **GET `/usuarios`** - Validar se a resposta de listagem contém as propriedades estruturais necessárias (`quantidade`, `usuarios`).
-- [x] **POST `/usuarios`** - Cadastrar usuário válido com sucesso (Status 211).
+- [x] **POST `/usuarios`** - Cadastrar usuário válido com sucesso (Status 201).
 - [x] **POST `/usuarios`** - Impedir cadastro de e-mail duplicado (Status 400).
 - [x] **POST `/usuarios`** - Impedir cadastro sem o campo `nome` (Status 400).
 - [x] **POST `/usuarios`** - Impedir cadastro sem o campo `email` (Status 400).
