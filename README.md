@@ -5,33 +5,6 @@
 > **CI Status:** ![![CI Workflow](https://github.com/vitto2099/DesafioAir-qa-serverest-VitorKunicki/actions/workflows/pytest.yml/badge.svg)](https://github.com/vitto2099/DesafioAir-qa-serverest-VitorKunicki/actions/workflows/pytest.yml)
 ---
 
-## 🛠️ O que Fizemos (Ajustes e Correções Recentes)
-
-Identificamos e corrigimos alguns gargalos para garantir a estabilidade local e da pipeline de CI no GitHub Actions:
-
-<details>
-<summary><b>1. Correção no Teste de Produto Inexistente (<code>test_buscar_produto_por_id_inexistente</code>)</b></summary>
-
-* **Problema**: O teste enviava o ID inválido `id_que_nao_existe_123` (21 caracteres). A API do ServeRest exige exatamente 16 caracteres alfanuméricos, gerando um erro de formato de ID (KeyError) ao invés da mensagem `"Produto não encontrado"`.
-* **Solução**: Alterado o ID de teste para `0000000000000000` (16 caracteres). A API agora retorna corretamente o status 400 com a mensagem esperada.
-</details>
-
-<details>
-<summary><b>2. Correção de Imports (<code>ModuleNotFoundError</code> no CI)</b></summary>
-
-* **Problema**: Os arquivos de testes importavam módulos usando o prefixo `tests.conftest` e `tests.schemas`, o que falhava no ambiente de CI pois a pasta `tests` não estava no path global de execução do runner.
-* **Solução**: Removemos o prefixo `tests.`, utilizando a resolução de path nativa do pytest (`from conftest ...` e `from schemas ...`).
-</details>
-
-<details>
-<summary><b>3. Ajuste no Script de Execução (<code>rodarTudo.py</code>)</b></summary>
-
-* **Problema**: O arquivo chamava-se `test_rodarTudo.py`. O pytest tentava coletá-lo como um teste e disparava um comando global `pip install` durante a varredura, o que travava a execução com `exit code 2` no CI.
-* **Solução**: Renomeado para `rodarTudo.py` e protegido a execução do subprocesso de instalação dentro do bloco `if __name__ == "__main__":`.
-</details>
-
----
-
 ## 📋 Plano de Testes
 
 <details>
