@@ -140,8 +140,9 @@ A API ServeRest possui um total de **16 rotas/verbos (endpoints)** descritos no 
 
 ## 🐛 Bugs Encontrados na ServeRest
 
-| Bug | Comportamento Esperado | Comportamento Obtido | Severidade | Status |
+| Bug (ID) | Comportamento Esperado | Comportamento Obtido | Severidade | Status |
 | :--- | :--- | :--- | :--- | :--- |
-| **DELETE `/produtos/{id}`** | Deletar e retornar `"Registro excluído com sucesso"` (200 OK) | Deleta o produto mas retorna `"Nenhum registro excluído"` (200 OK) | Média | Marcado com `@pytest.mark.xfail` |
+| **BUG-01: DELETE `/produtos/{id}`** | Deletar e retornar `"Registro excluído com sucesso"` | Deletou o produto mas retornou `"Nenhum registro excluído"`. Na execução atual, o comportamento foi inconsistente e o teste passou inesperadamente (XPASS). | Média | 🟠 Requer ação (avaliar remoção do xfail) |
+| **BUG-02: Instabilidade em `/usuarios`** | Testes de PUT, POST e DELETE de usuários passarem de primeira | Testes falham na 1ª tentativa e exigem reexecução automática (RERUN), sugerindo instabilidade na API. | Média | 🔴 Aberto |
 | **GET `/produtos/{id_inexistente}`** | Retornar `404 Not Found` para recurso não existente | Retorna `400 Bad Request` com a mensagem `"Produto não encontrado"` | Baixa | Validado no teste |
 
