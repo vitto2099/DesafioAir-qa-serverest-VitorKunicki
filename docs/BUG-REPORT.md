@@ -8,6 +8,7 @@
 |---|---|---|---|---|
 | BUG-01 | `DELETE /produtos/{id}` — teste marcado como `xfail` passou inesperadamente (XPASS) | 🟡 Média | 🟠 Requer Ação | `DELETE /produtos/{id}` |
 | BUG-02 | Testes de usuários apresentam instabilidade (RERUN automático) | 🟡 Média | 🔴 Aberto | `PUT /usuarios/{id}`, `POST /usuarios`, `DELETE /usuarios/{id}` |
+| BUG-03 | Senha retornada em texto puro nas respostas da API de usuários | 🔴 Alta | 🔴 Aberto | `GET /usuarios`, `GET /usuarios/{id}`, `POST /usuarios`, `DELETE /usuarios/{id}` |
 
 ---
 
@@ -191,11 +192,121 @@ tests/test_excluir_usuario_com_sucesso.py::test_excluir_usuario_com_sucesso  PAS
 
 ---
 
+## BUG-03 — Senha Retornada em Texto Puro nas Respostas de Usuários
+
+| Campo | Valor |
+|---|---|
+| **ID** | BUG-03 |
+| **Título** | Campo `password` exposto em texto puro nas respostas da API de usuários |
+| **Severidade** | 🔴 Alta |
+| **Prioridade** | 🔴 Alta |
+| **Status** | 🔴 Aberto |
+| **Ambiente** | `https://compassuol.serverest.dev` |
+| **Endpoints Afetados** | `GET /usuarios`, `GET /usuarios/{id}`, `POST /usuarios`, `DELETE /usuarios/{id}` |
+| **Tipo** | Vulnerabilidade de Segurança — Exposição de Dados Sensíveis (CWE-312) |
+
+---
+
+### 📋 Contexto
+
+A API ServeRest retorna o campo `password` em **texto puro (plaintext)** em todas as respostas que envolvem dados de usuários. Isso significa que qualquer pessoa com acesso às respostas da API — incluindo logs, proxies, ferramentas de monitoramento ou ataques man-in-the-middle — pode obter as senhas dos usuários sem nenhum esforço.
+
+---
+
+### 🔬 Reprodução
+
+**Requisição:**
+```http
+GET https://compassuol.serverest.dev/usuarios
+```
+
+**Resposta atual (comportamento incorreto):**
+```json
+{
+  "quantidade": 1,
+  "usuarios": [
+    {
+      "nome": "Fulano da Silva",
+      "email": "beltrano@qa.com.br",
+      "password": "teste",
+      "administrador": "true",
+      "_id": "0uxuPY0cbmQhpEz1"
+    }
+  ]
+}
+```
+
+> ⚠️ O campo `"password": "teste"` é retornado em **texto puro** na resposta.
+
+O mesmo comportamento ocorre em:
+- `GET /usuarios/{id}` — busca individual de usuário
+- `POST /usuarios` (via corpo de requisição que é refletido no response)
+- `DELETE /usuarios/{id}` (campo `password` visível no payload do body request que fica em logs)
+
+---
+
+### ✅ Comportamento Esperado (correto)
+
+O campo `password` **nunca** deve ser retornado nas respostas da API. A resposta correta deveria ser:
+
+```json
+{
+  "quantidade": 1,
+  "usuarios": [
+    {
+      "nome": "Fulano da Silva",
+      "email": "beltrano@qa.com.br",
+      "administrador": "true",
+      "_id": "0uxuPY0cbmQhpEz1"
+    }
+  ]
+}
+```
+
+Alternativamente, se a senha precisar ser armazenada, ela deveria ser **hasheada** (ex: bcrypt) antes de ser persistida e **nunca exposta** na resposta.
+
+---
+
+### 💡 Impacto
+
+| Risco | Descrição |
+|---|---|
+| **Exposição de credenciais** | Qualquer requisição `GET /usuarios` expõe senhas de **todos** os usuários cadastrados |
+| **Reutilização de senhas** | Usuários costumam reutilizar senhas — a exposição pode comprometer outras contas (e-mail, redes sociais, etc.) |
+| **Conformidade LGPD/GDPR** | Dados de autenticação são dados sensíveis — a exposição viola regulamentos de proteção de dados |
+| **Ataques de escalada de privilégio** | Um usuário comum pode listar todos os usuários e obter a senha de um administrador |
+
+---
+
+### 🔧 Ação Recomendada
+
+1. **Nunca retornar o campo `password`** nas respostas de listagem ou busca de usuários.
+2. **Implementar hashing** de senhas no armazenamento (ex: `bcrypt`, `argon2`).
+3. **Adicionar teste automatizado** para verificar que o campo `password` **não está presente** nas respostas:
+
+```python
+# Teste sugerido: verificar que password NÃO aparece na resposta
+def test_listagem_usuarios_nao_expoe_senha():
+    resposta = requests.get(f"{BASE_URL}/usuarios")
+    assert resposta.status_code == 200
+    usuarios = resposta.json()["usuarios"]
+    for usuario in usuarios:
+        assert "password" not in usuario, "BUG-03: Senha exposta em texto puro na listagem de usuários!"
+
+def test_buscar_usuario_por_id_nao_expoe_senha(usuario_id):
+    resposta = requests.get(f"{BASE_URL}/usuarios/{usuario_id}")
+    assert resposta.status_code == 200
+    assert "password" not in resposta.json(), "BUG-03: Senha exposta em texto puro na busca por ID!"
+```
+
+---
+
 ## 📊 Resumo Executivo
 
 | ID | Endpoint | Resultado na Execução | Causa Provável | Ação |
 |---|---|---|---|---|
 | BUG-01 | `DELETE /produtos/{id}` | XPASS | Bug corrigido na API / marker desatualizado | Remover `@pytest.mark.xfail` após confirmação |
 | BUG-02 | `PUT`, `POST`, `DELETE /usuarios/{id}` | RERUN (x3) | Instabilidade de rede / race condition | Investigar com `--tb=long`, adicionar timeout |
+| BUG-03 | `GET /usuarios`, `GET /usuarios/{id}` | Campo `password` exposto em plaintext | Falta de sanitização da resposta / ausência de hashing | Remover `password` das respostas; implementar hashing |
 
 **Resultado Geral da Última Execução:** `16 passed, 1 xpassed` em `21.19s`
