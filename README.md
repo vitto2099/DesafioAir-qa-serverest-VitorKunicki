@@ -55,7 +55,7 @@ Garantir a qualidade, estabilidade e corretude dos principais endpoints da API p
 
 ---
 
-## 📊 Análise de Cobertura da API
+## 📊 Cobertura da API
 
 **Método utilizado para calcular a cobertura:**  
 Com base nos conceitos de mapeamento de endpoints da API REST, a cobertura foi calculada comparando o número de rotas e métodos HTTP disponíveis na ServeRest em relação aos que possuem testes automatizados nesta suíte.
